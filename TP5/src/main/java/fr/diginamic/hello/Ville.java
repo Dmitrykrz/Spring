@@ -6,6 +6,10 @@ public class Ville {
     private int id;
 
 
+    /**
+     * @param nom  Name of the ville
+     * @param nbHabitants numper of people
+     */
     public Ville(String nom, int nbHabitants) {
 
         this.nom = nom;

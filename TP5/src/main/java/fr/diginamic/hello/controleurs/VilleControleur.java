@@ -8,27 +8,35 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Controller for /villes
+ */
 @RestController
 @RequestMapping("/villes")
     public class VilleControleur {
     private int nextId = 1;
 
 
+    /**
+     *  this list acts as a database
+     */
+   private List<Ville> villes = new ArrayList<>();
 
 
-    //==================DATABASE======================
-    private List<Ville> villes = new ArrayList<>();
-
-
-
-
+    /**
+     * @return JSON object of the database of the villes
+     */
     @GetMapping
     public List<Ville> getVilles() {
         return villes;
     }
 
 
-    // http://localhost:8080/villes/2
+    /**
+     * @param id Takes id
+     * @return ville by id
+     */
+
     @GetMapping("/{id}")
     public ResponseEntity<Ville> getVilleById(@PathVariable int id) {
         for (Ville v : villes) {
@@ -40,12 +48,19 @@ import java.util.List;
     }
 
 
-    // Json example for POST request on  http://localhost:8080/villes
-    //  {
-    //     "nom":"Paris",
-    //          "nbHabitants":9923399
-    //  }
 
+
+    /**
+     * @param nouvelleVille  JSON object for ville
+     * @return OK or FAIl based on existance of ville with same name
+     *
+     *   Json example for POST request on  http://localhost:8080/villes
+     *       {
+     *          "nom":"Paris",
+     *               "nbHabitants":9923399
+     *       }
+     * 
+     */
     @PostMapping
     public ResponseEntity<String> ajouterVille(@RequestBody Ville nouvelleVille) {
         for (Ville v : villes) {
@@ -60,6 +75,11 @@ import java.util.List;
         return ResponseEntity.ok("Ville insérée avec succès");
     }
 
+    /**
+     * @param id  id of the ville
+     * @param villeModifiee new JSON
+     * @return OK or not OK
+     */
     @PutMapping("/{id}")
     public ResponseEntity<String> modifierVille(@PathVariable int id, @RequestBody Ville villeModifiee) {
         for (Ville v : villes) {
@@ -72,6 +92,10 @@ import java.util.List;
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Ville id non trouvée");
     }
 
+    /**
+     * @param id  of the ville
+     * @return  OK or Not Ok
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<String> supprimerVille(@PathVariable int id) {
         for (Ville v : villes) {

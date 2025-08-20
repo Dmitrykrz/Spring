@@ -8,6 +8,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/test")
 public class testControleur {
 
+    /**
+     * @return Returns test
+     * very usefull function
+     */
     @GetMapping
     public String test_bla_bla_bla() {
         return ("test");
