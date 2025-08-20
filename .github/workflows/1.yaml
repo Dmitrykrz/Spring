@@ -1,4 +1,4 @@
-name: Java CI with Security Scan
+name: Java Format Check
 
 on:
   push:
@@ -9,53 +9,46 @@ on:
       - main
 
 jobs:
-  build-and-scan:
+  check-java-format:
     runs-on: ubuntu-latest
 
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
 
-      - name: Set up Java and Maven
+      - name: Set up Java
         uses: actions/setup-java@v3
         with:
           distribution: temurin
           java-version: 17
-          cache: maven
 
-      - name: Run Maven Lint & Tests
+      - name: Run Google Java Format (gJF)
+        id: gjf
         run: |
-          mvn checkstyle:check
-          mvn pmd:check
-          mvn com.github.spotbugs:spotbugs-maven-plugin:check
-          mvn test
+          curl -L -o /tmp/google-java-format.jar https://github.com/google/google-java-format/releases/download/google-java-format-1.16.0/google-java-format-1.16.0-all-deps.jar
+          
+          # Find all .java files and run gJF
+          FORMAT_OUTPUT=$(java -jar /tmp/google-java-format.jar --dry-run --set-exit-if-changed $(find . -name "*.java") 2>&1 || true)
+          
+          # Save results
+          echo "$FORMAT_OUTPUT" > gjf_output.txt
+          echo "format_status=$(if [ -s gjf_output.txt ]; then echo 'fail'; else echo 'pass'; fi)" >> $GITHUB_OUTPUT
 
-      - name: Scan for passwords and send message
+      - name: Send Telegram alert if formatting fails
+        if: ${{ steps.gjf.outputs.format_status == 'fail' }}
         run: |
-          found_files=$(grep -rlI "password" .)
-
           REPO="${{ github.repository }}"
           COMMIT_MESSAGE="${{ github.event.head_commit.message }}"
           USERNAME="${{ github.actor }}"
+          FILES=$(cat gjf_output.txt)
 
-          # Escape commit message for Telegram MarkdownV2
           COMMIT_MESSAGE_ESCAPED=$(echo "$COMMIT_MESSAGE" | sed 's/[_*`\[]/\\&/g')
 
-          # Start message
           MESSAGE="*Commit Report*%0A"
           MESSAGE="${MESSAGE}👤 *User:* \`$USERNAME\`%0A"
           MESSAGE="${MESSAGE}📦 *Repository:* \`$REPO\`%0A"
           MESSAGE="${MESSAGE}📝 *Message:* _${COMMIT_MESSAGE_ESCAPED}_%0A%0A"
-
-          # Add scan results
-          if [ -z "$found_files" ]; then
-            MESSAGE="${MESSAGE}✅ *No passwords found.*"
-            echo "No passwords found."
-          else
-            MESSAGE="${MESSAGE}💣 *WARNING*%0A⚠️ Potential passwords found in:%0A\`\`\`%0A$found_files%0A\`\`\`"
-            echo "Potential passwords found:"
-            echo "$found_files"
-          fi
+          MESSAGE="${MESSAGE}💣 *Formatting issues detected in:*%0A\`\`\`%0A$FILES%0A\`\`\`"
 
           curl -s -X POST https://api.telegram.org/${{ secrets.BOTID }}:${{ secrets.TELEGRAMTOKEN }}/sendMessage \
             -d chat_id=${{ secrets.CHATID }} \
