@@ -33,10 +33,10 @@ jobs:
             echo "$found_files"
           fi
 
-          # Send a message to Telegram.
-          # We use printf to ensure the message is correctly URL-encoded.
-          # %0A is the URL-encoded character for a newline.
-          curl -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
-          -d "chat_id=${{ secrets.CHAT_ID }}" \
+         
+          curl -X POST https://api.telegram.org/${{ secrets.BOTID }}:${{ secrets.TELEGRAMTOKEN }}/sendMessage \
+          -d chat_id=${{ secrets.CHATID }} \
           -d "text=$MESSAGE"
+          
+         
 
