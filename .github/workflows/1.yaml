@@ -34,16 +34,13 @@ jobs:
           fi
           
           
-          echo "sending telegram message"
-          curl -X POST https://api.telegram.org/${{ secrets.BOTID }}:${{ secrets.TELEGRAMTOKEN }}/sendMessage \
-
-          -d chat_id=${{ secrets.CHATID }} \
-
-          -d text="hello from github action"
-         
           curl -X POST https://api.telegram.org/${{ secrets.BOTID }}:${{ secrets.TELEGRAMTOKEN }}/sendMessage \
-          -d chat_id=${{ secrets.CHATID }} \
-          -d "text=$MESSAGE"
+          -d chat_id=${{ secrets.CHATID }} \
+          -d text="hello from github action"
+         
+       #   curl -X POST https://api.telegram.org/${{ secrets.BOTID }}:${{ secrets.TELEGRAMTOKEN }}/sendMessage \
+        #  -d chat_id=${{ secrets.CHATID }} \
+       #   -d "text=$MESSAGE"
           
           
           
