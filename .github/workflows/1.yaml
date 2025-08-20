@@ -18,6 +18,7 @@ jobs:
       - name: Say "Tests passed" and send message
         run: |
           echo "sending telegram message"
-          curl -X POST https://api.telegram.org/bot729:AU/sendMessage \
-          -d chat_id=3419 \
+          echo "${{ secrets.CHATID }}"
+          curl -X POST https://api.telegram.org/${{ secrets.BOTID }}:${{ secrets.TELEGRAMTOKEN }}/sendMessage \
+          -d chat_id=${{ secrets.CHATID }} \
           -d text="hello from github action"
