@@ -1,4 +1,4 @@
-name: Java Format Check
+name: Simple Workflow, Password Checker
 
 on:
   push:
@@ -9,48 +9,46 @@ on:
       - main
 
 jobs:
-  check-java-format:
+  check-for-passwords-in-code:
     runs-on: ubuntu-latest
-
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
+    
 
-      - name: Set up Java
-        uses: actions/setup-java@v3
-        with:
-          distribution: temurin
-          java-version: 17
-
-      - name: Run Google Java Format (gJF)
-        id: gjf
+      - name: Scan for passwords and send message
         run: |
-          curl -L -o /tmp/google-java-format.jar https://github.com/google/google-java-format/releases/download/google-java-format-1.16.0/google-java-format-1.16.0-all-deps.jar
-          
-          # Find all .java files and run gJF
-          FORMAT_OUTPUT=$(java -jar /tmp/google-java-format.jar --dry-run --set-exit-if-changed $(find . -name "*.java") 2>&1 || true)
-          
-          # Save results
-          echo "$FORMAT_OUTPUT" > gjf_output.txt
-          echo "format_status=$(if [ -s gjf_output.txt ]; then echo 'fail'; else echo 'pass'; fi)" >> $GITHUB_OUTPUT
+          found_files=$(grep -rlI "password" .)
 
-      - name: Send Telegram alert if formatting fails
-        if: ${{ steps.gjf.outputs.format_status == 'fail' }}
-        run: |
           REPO="${{ github.repository }}"
           COMMIT_MESSAGE="${{ github.event.head_commit.message }}"
           USERNAME="${{ github.actor }}"
-          FILES=$(cat gjf_output.txt)
 
+          # Escape commit message for Telegram MarkdownV2 (basic safe escape)
           COMMIT_MESSAGE_ESCAPED=$(echo "$COMMIT_MESSAGE" | sed 's/[_*`\[]/\\&/g')
 
+          # Start message
           MESSAGE="*Commit Report*%0A"
           MESSAGE="${MESSAGE}👤 *User:* \`$USERNAME\`%0A"
           MESSAGE="${MESSAGE}📦 *Repository:* \`$REPO\`%0A"
           MESSAGE="${MESSAGE}📝 *Message:* _${COMMIT_MESSAGE_ESCAPED}_%0A%0A"
-          MESSAGE="${MESSAGE}💣 *Formatting issues detected in:*%0A\`\`\`%0A$FILES%0A\`\`\`"
+
+          # Add scan results
+          if [ -z "$found_files" ]; then
+            MESSAGE="${MESSAGE}✅ *No passwords found.*"
+            echo "No passwords found."
+          else
+            MESSAGE="${MESSAGE}💣 *WARNING*%0A⚠️ Potential passwords found in:%0A\`\`\`%0A$found_files%0A\`\`\`"
+            echo "Potential passwords found:"
+            echo "$found_files"
+          fi
+
+      - name: Send telegram message
+        run: |          
+          
 
           curl -s -X POST https://api.telegram.org/${{ secrets.BOTID }}:${{ secrets.TELEGRAMTOKEN }}/sendMessage \
             -d chat_id=${{ secrets.CHATID }} \
             -d parse_mode=MarkdownV2 \
             -d text="$MESSAGE"
+
