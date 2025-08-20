@@ -36,7 +36,7 @@ jobs:
           
           curl -X POST https://api.telegram.org/${{ secrets.BOTID }}:${{ secrets.TELEGRAMTOKEN }}/sendMessage \
           -d chat_id=${{ secrets.CHATID }} \
-          -d text="hello from github action"
+          -d text="$MESSAGE"
          
      
           
