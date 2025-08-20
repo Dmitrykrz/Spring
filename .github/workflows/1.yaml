@@ -43,8 +43,7 @@ jobs:
             echo "$found_files"
           fi
 
-      - name: Send telegram message
-        run: |          
+             
           
 
           curl -s -X POST https://api.telegram.org/${{ secrets.BOTID }}:${{ secrets.TELEGRAMTOKEN }}/sendMessage \
