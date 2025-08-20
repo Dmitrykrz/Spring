@@ -13,14 +13,14 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/villes")
-    public class VilleControleur {
+public class VilleControleur {
     private int nextId = 1;
 
 
     /**
-     *  this list acts as a database
+     * this list acts as a database
      */
-   private List<Ville> villes = new ArrayList<>();
+    private List<Ville> villes = new ArrayList<>();
 
 
     /**
@@ -48,18 +48,16 @@ import java.util.List;
     }
 
 
-
-
     /**
-     * @param nouvelleVille  JSON object for ville
+     * @param nouvelleVille JSON object for ville
      * @return OK or FAIl based on existance of ville with same name
+     * <p>
+     * Json example for POST request on  http://localhost:8080/villes
+     * {
+     * "nom":"Paris",
+     * "nbHabitants":9923399
+     * }
      *
-     *   Json example for POST request on  http://localhost:8080/villes
-     *       {
-     *          "nom":"Paris",
-     *               "nbHabitants":9923399
-     *       }
-     * 
      */
     @PostMapping
     public ResponseEntity<String> ajouterVille(@RequestBody Ville nouvelleVille) {
@@ -76,7 +74,7 @@ import java.util.List;
     }
 
     /**
-     * @param id  id of the ville
+     * @param id            id of the ville
      * @param villeModifiee new JSON
      * @return OK or not OK
      */
@@ -93,22 +91,31 @@ import java.util.List;
     }
 
     /**
-     * @param id  of the ville
-     * @return  OK or Not Ok
+     * Deletes the ville. uses delete outside of loop to evade ConcurrentModificationException
+     *
+     * @param id of the ville
+     * @return OK or Not Ok
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<String> supprimerVille(@PathVariable int id) {
+        Ville villeToRemove = null;
+
         for (Ville v : villes) {
             if (v.getId() == id) {
-                villes.remove(v);
-                return ResponseEntity.ok("Ville supprimée");
+                villeToRemove = v;
+                break;
             }
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Ville id non trouvée");
+
+        if (villeToRemove != null) {
+            villes.remove(villeToRemove);
+            return ResponseEntity.ok("Ville supprimée");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Ville id non trouvée");
+        }
+
+
     }
-
-
-
 }
 
 
