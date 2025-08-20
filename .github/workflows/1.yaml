@@ -15,10 +15,28 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v4
 
-      - name: Say "Tests passed" and send message
+      - name: Scan for passwords and send message
         run: |
-          echo "sending telegram message"
-          echo "${{ secrets.CHATID }}"
-          curl -X POST https://api.telegram.org/${{ secrets.BOTID }}:${{ secrets.TELEGRAMTOKEN }}/sendMessage \
-          -d chat_id=${{ secrets.CHATID }} \
-          -d text="hello from github action"
+          # Use grep to recursively search for the word "password" in all files.
+          # -r: recursive search
+          # -l: list only the filenames that contain a match
+          # -I: ignore binary files
+          found_files=$(grep -rlI "password" .)
+
+          # Check if the 'found_files' variable is empty
+          if [ -z "$found_files" ]; then
+            MESSAGE="No passwords found. Your repository is clean."
+            echo "No passwords found."
+          else
+            MESSAGE="Warning: Potential passwords found in the following files:%0A$found_files"
+            echo "Potential passwords found:"
+            echo "$found_files"
+          fi
+
+          # Send a message to Telegram.
+          # We use printf to ensure the message is correctly URL-encoded.
+          # %0A is the URL-encoded character for a newline.
+          curl -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
+          -d "chat_id=${{ secrets.CHAT_ID }}" \
+          -d "text=$MESSAGE"
+
