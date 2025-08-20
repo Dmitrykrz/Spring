@@ -15,5 +15,9 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v4
 
-      - name: Say "Tests passed"
-        run: echo "Tests passed"
+      - name: Say "Tests passed" and send message
+        run: |
+          echo "sending telegram message"
+          curl -X POST https://api.telegram.org/bot729:AU/sendMessage \
+          -d chat_id=3419 \
+          -d text="hello from github action"
