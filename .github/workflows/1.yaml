@@ -1,4 +1,4 @@
-name: Simple Workflow
+name: Java CI with Security Scan
 
 on:
   push:
@@ -9,11 +9,26 @@ on:
       - main
 
 jobs:
-  say-hello:
+  build-and-scan:
     runs-on: ubuntu-latest
+
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
+
+      - name: Set up Java and Maven
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: maven
+
+      - name: Run Maven Lint & Tests
+        run: |
+          mvn checkstyle:check
+          mvn pmd:check
+          mvn com.github.spotbugs:spotbugs-maven-plugin:check
+          mvn test
 
       - name: Scan for passwords and send message
         run: |
@@ -23,7 +38,7 @@ jobs:
           COMMIT_MESSAGE="${{ github.event.head_commit.message }}"
           USERNAME="${{ github.actor }}"
 
-          # Escape commit message for Telegram MarkdownV2 (basic safe escape)
+          # Escape commit message for Telegram MarkdownV2
           COMMIT_MESSAGE_ESCAPED=$(echo "$COMMIT_MESSAGE" | sed 's/[_*`\[]/\\&/g')
 
           # Start message
@@ -46,4 +61,3 @@ jobs:
             -d chat_id=${{ secrets.CHATID }} \
             -d parse_mode=MarkdownV2 \
             -d text="$MESSAGE"
-
