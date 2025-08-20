@@ -18,30 +18,27 @@ jobs:
       - name: Scan for passwords and send message
         run: |
           # Use grep to recursively search for the word "password" in all files.
-          # -r: recursive search
-          # -l: list only the filenames that contain a match
-          # -I: ignore binary files
           found_files=$(grep -rlI "password" .)
 
-          # Check if the 'found_files' variable is empty
+          # Repo, commit, and user info from GitHub context
+          REPO="${{ github.repository }}"
+          COMMIT_MESSAGE="${{ github.event.head_commit.message }}"
+          USERNAME="${{ github.actor }}"
+
+          # Start message
+          MESSAGE="Commit was made by $USERNAME in repository $REPO with message: $COMMIT_MESSAGE%0A%0A"
+
+          # Add scan results
           if [ -z "$found_files" ]; then
-            MESSAGE="No passwords found. Your repository is clean."
+            MESSAGE="$MESSAGE✅ No passwords found."
             echo "No passwords found."
           else
-            MESSAGE="Warning: Potential passwords found in the following files:%0A$found_files"
+            MESSAGE="$MESSAGE⚠️ Potential passwords found in the following files:%0A$found_files"
             echo "Potential passwords found:"
             echo "$found_files"
           fi
-          
-          
-          curl -X POST https://api.telegram.org/${{ secrets.BOTID }}:${{ secrets.TELEGRAMTOKEN }}/sendMessage \
-          -d chat_id=${{ secrets.CHATID }} \
-          -d text="$MESSAGE"
-         
-     
-          
-          
-          
-         
-         
 
+          # Send to Telegram
+          curl -X POST https://api.telegram.org/${{ secrets.BOTID }}:${{ secrets.TELEGRAMTOKEN }}/sendMessage \
+            -d chat_id=${{ secrets.CHATID }} \
+            -d text="$MESSAGE"
