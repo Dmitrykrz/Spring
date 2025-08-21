@@ -8,11 +8,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 
+import org.springframework.validation.ObjectError;
 import org.springframework.validation.Validator;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Controller for /villes
@@ -69,15 +71,13 @@ public class VilleControleur {
      */
     @PostMapping
     public ResponseEntity<String> ajouterVille(@Valid @RequestBody Ville nouvelleVille, BindingResult result) {
-
-        //if (result.hasErrors()) {
-        //
-        ///    List<ObjectError> errors = result.getAllErrors();
-         //   return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors.get(0).getDefaultMessage());
-        //}
-        //Errors errors=validateObject(nouvelleVille);
-
-
+        if (result.hasErrors()) {
+            String errors = result.getAllErrors()
+                    .stream()
+                    .map(ObjectError::getDefaultMessage)
+                    .collect(Collectors.joining(", "));
+            return ResponseEntity.badRequest().body("Validation errors: " + errors);
+        }
 
         for (Ville v : villes) {
             if (v.getNom().equalsIgnoreCase(nouvelleVille.getNom())) {
@@ -97,7 +97,16 @@ public class VilleControleur {
      * @return OK or not OK
      */
     @PutMapping("/{id}")
-    public ResponseEntity<String> modifierVille(@PathVariable int id, @RequestBody Ville villeModifiee) {
+    public ResponseEntity<String> modifierVille( @PathVariable int id, @Valid @RequestBody Ville villeModifiee, BindingResult result) {
+
+        if (result.hasErrors()) {
+            String errors = result.getAllErrors()
+                    .stream()
+                    .map(ObjectError::getDefaultMessage)
+                    .collect(Collectors.joining(", "));
+            return ResponseEntity.badRequest().body("Validation errors: " + errors);
+        }
+
         for (Ville v : villes) {
             if (v.getId() == id) {
                 v.setNom(villeModifiee.getNom());

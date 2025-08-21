@@ -12,6 +12,7 @@ public class Ville {
     @Min(1)
     private int nbHabitants;
 
+    @Min(0)
     private int id;
 
 
