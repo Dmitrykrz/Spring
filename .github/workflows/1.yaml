@@ -31,7 +31,7 @@ jobs:
           MESSAGE="Commit Report%0A"
           MESSAGE="${MESSAGE}👤 User: \`$USERNAME\`%0A"
           MESSAGE="${MESSAGE}📦 Repository: \`$REPO\`%0A"
-          MESSAGE="${MESSAGE}📝 Message: _${COMMIT_MESSAGE_ESCAPED}_%0A%0A"
+          MESSAGE="${MESSAGE}📝 Commit Message: ${COMMIT_MESSAGE_ESCAPED}%0A%0A"
 
           # Add scan results
           if [ -z "$found_files" ]; then
