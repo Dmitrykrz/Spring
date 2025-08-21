@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/villes")
 public class VilleControleur {
-  
+
 
     private int nextId = 1;
 

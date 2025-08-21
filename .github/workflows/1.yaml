@@ -38,8 +38,9 @@ jobs:
             MESSAGE="${MESSAGE}✅ *No passwords found.*"
             echo "No passwords found."
           else
-            #MESSAGE="${MESSAGE}💣 *WARNING*%0A⚠️ Potential passwords found in:%0A\`\`\`%0A$found_files%0A\`\`\`"
+            
             MESSAGE="${MESSAGE}💣 *WARNING*%0A⚠️ Potential passwords found in files. Look in Github Actions"
+            echo "$MESSAGE"
             echo "Potential passwords found:"
             echo "$found_files"
           fi
