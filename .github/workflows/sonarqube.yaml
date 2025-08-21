@@ -37,3 +37,11 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=Dmitrykrz_Spring_40859943-6c01-4f47-ad4f-93c3bc3576d8 -Dsonar.projectName='Spring'
+        run: |
+          REPO="${{ github.repository }}"
+          MESSAGE="$REPO was send to sonarqube"
+          curl -s -X POST https://api.telegram.org/${{ secrets.BOTID }}:${{ secrets.TELEGRAMTOKEN }}/sendMessage \
+            -d chat_id=${{ secrets.CHATID }} \
+            -d parse_mode=MarkdownV2 \
+            -d text="$MESSAGE"
+

@@ -22,8 +22,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/villes")
 public class VilleControleur {
-   // @Autowired
-   // private Validator validator;
+  
 
     private int nextId = 1;
 
