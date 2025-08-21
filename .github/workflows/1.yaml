@@ -28,10 +28,10 @@ jobs:
           COMMIT_MESSAGE_ESCAPED=$(echo "$COMMIT_MESSAGE" | sed 's/[_*`\[]/\\&/g')
 
           # Start message
-          MESSAGE="*Commit Report*%0A"
-          MESSAGE="${MESSAGE}👤 *User:* \`$USERNAME\`%0A"
-          MESSAGE="${MESSAGE}📦 *Repository:* \`$REPO\`%0A"
-          MESSAGE="${MESSAGE}📝 *Message:* _${COMMIT_MESSAGE_ESCAPED}_%0A%0A"
+          MESSAGE="Commit Report%0A"
+          MESSAGE="${MESSAGE}👤 User: \`$USERNAME\`%0A"
+          MESSAGE="${MESSAGE}📦 Repository: \`$REPO\`%0A"
+          MESSAGE="${MESSAGE}📝 Message: _${COMMIT_MESSAGE_ESCAPED}_%0A%0A"
 
           # Add scan results
           if [ -z "$found_files" ]; then
@@ -39,7 +39,7 @@ jobs:
             echo "No passwords found."
           else
             
-            MESSAGE="${MESSAGE}💣 *WARNING*%0A⚠️ Potential passwords found in files. Look in Github Actions"
+            MESSAGE="${MESSAGE}💣 WARNING%0A⚠️ Potential passwords found in files. Look in Github Actions"
             echo "$MESSAGE"
             echo "Potential passwords found:"
             echo "$found_files"
@@ -50,6 +50,5 @@ jobs:
 
           curl -s -X POST https://api.telegram.org/${{ secrets.BOTID }}:${{ secrets.TELEGRAMTOKEN }}/sendMessage \
             -d chat_id=${{ secrets.CHATID }} \
-            -d parse_mode=MarkdownV2 \
             -d text="$MESSAGE"
 
