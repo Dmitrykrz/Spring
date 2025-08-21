@@ -6,7 +6,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 
-
 @Entity
 public class Ville {
     @Id
@@ -24,8 +23,9 @@ public class Ville {
 
 
     /**
-     * @param nom  Name of the ville
-     * @param nbHabitants numper of people
+     * Constructeur pour créer une ville avec un nom et une population.
+     * @param nom  Nom de la ville.
+     * @param nbHabitants Nombre d'habitants.
      */
     public Ville(String nom, int nbHabitants) {
 
@@ -34,6 +34,9 @@ public class Ville {
 
     }
 
+    /**
+     * Constructeur par défaut.
+     */
     public Ville() {
 
     }
@@ -41,7 +44,7 @@ public class Ville {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "departement_id", nullable = false)
-    @NotNull  // validation Bean Validation
+    @NotNull
     private Departement departement;
 
     public int getId() {

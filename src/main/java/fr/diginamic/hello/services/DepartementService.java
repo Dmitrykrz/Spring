@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+
 @Service
 @Transactional
 public class DepartementService {
@@ -15,18 +16,29 @@ public class DepartementService {
     @PersistenceContext
     private EntityManager entityManager;
 
-    // ---------------- GET all ----------------
+    /**
+     * Extrait tous les départements.
+     * @return la liste de tous les départements.
+     */
     public List<Departement> extractDepartements() {
         return entityManager.createQuery("SELECT d FROM Departement d", Departement.class)
                 .getResultList();
     }
 
-    // ---------------- GET by ID ----------------
+    /**
+     * Extrait un département par son ID.
+     * @param id ID du département.
+     * @return le département ou null si non trouvé.
+     */
     public Departement extractDepartement(int id) {
         return entityManager.find(Departement.class, id);
     }
 
-    // ---------------- GET by name ----------------
+    /**
+     * Extrait un département par son nom.
+     * @param nom nom du département.
+     * @return le département ou null si non trouvé.
+     */
     public Departement extractDepartement(String nom) {
         List<Departement> results = entityManager
                 .createQuery("SELECT d FROM Departement d WHERE d.nom = :nom", Departement.class)
@@ -35,12 +47,19 @@ public class DepartementService {
         return results.isEmpty() ? null : results.get(0);
     }
 
-    // ---------------- INSERT ----------------
+    /**
+     * Insère un département.
+     * @param d le département à insérer.
+     */
     public void insertDepartement(Departement d) {
         entityManager.persist(d);
     }
 
-    // ---------------- UPDATE ----------------
+    /**
+     * Modifie un département existant.
+     * @param id ID du département à modifier.
+     * @param departementModifie le département avec les données mises à jour.
+     */
     public void modifierDepartement(int id, Departement departementModifie) {
         Departement existing = entityManager.find(Departement.class, id);
         if (existing != null) {
@@ -50,7 +69,10 @@ public class DepartementService {
         }
     }
 
-    // ---------------- DELETE ----------------
+    /**
+     * Supprime un département par son ID.
+     * @param id ID du département à supprimer.
+     */
     public void supprimerDepartement(int id) {
         Departement existing = entityManager.find(Departement.class, id);
         if (existing != null) {

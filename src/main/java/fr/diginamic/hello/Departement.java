@@ -2,6 +2,8 @@ package fr.diginamic.hello;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+
 import java.util.List;
 
 @Entity
@@ -11,6 +13,7 @@ public class Departement {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @NotNull
     private String nom;
 
     @OneToMany(mappedBy = "departement", cascade = CascadeType.ALL, orphanRemoval = true)

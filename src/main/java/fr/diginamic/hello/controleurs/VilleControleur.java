@@ -12,23 +12,38 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Contrôleur REST pour la gestion des villes.
+ * Fournit des endpoints pour les opérations CRUD et les recherches de villes.
+ */
 @RestController
 @RequestMapping("/villes")
 public class VilleControleur {
 
     private final VilleService villeService;
 
+    /**
+     * Constructeur.
+     * @param villeService le service pour les villes.
+     */
     public VilleControleur(VilleService villeService) {
         this.villeService = villeService;
     }
 
-    // ---------------- GET all ----------------
+    /**
+     * Récupère toutes les villes.
+     * @return une liste de toutes les villes.
+     */
     @GetMapping
     public List<Ville> getVilles() {
         return villeService.extractVilles();
     }
 
-    // ---------------- GET by ID ----------------
+    /**
+     * Récupère une ville par son ID.
+     * @param id l'ID de la ville.
+     * @return la ville ou une réponse 404 si non trouvée.
+     */
     @GetMapping("/id/{id}")
     public ResponseEntity<Ville> getVilleById(@PathVariable int id) {
         Ville v = villeService.extractVille(id);
@@ -38,7 +53,11 @@ public class VilleControleur {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
-    // ---------------- GET by name ----------------
+    /**
+     * Récupère une ville par son nom.
+     * @param nom le nom de la ville.
+     * @return la ville ou une réponse 404 si non trouvée.
+     */
     @GetMapping("/nom/{nom}")
     public ResponseEntity<Ville> getVilleByNom(@PathVariable String nom) {
         Ville v = villeService.extractVille(nom);
@@ -48,21 +67,20 @@ public class VilleControleur {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
-    /** Add new ville
-     * @param nouvelleVille new ville
-     * @param result
-     * @return
+    /**
+     * Ajoute une nouvelle ville.
+     * @param nouvelleVille la nouvelle ville à ajouter.
+     * @param result le résultat de la validation.
+     * @return une réponse indiquant le succès ou l'échec de l'opération.
      * Example:
      * {
-     *   "nom": "Lattes",
-     *   "nbHabitants": 3000,
-     *   "departement": {
-     *     "id": 1
-     *   }
+     * "nom": "Lattes",
+     * "nbHabitants": 3000,
+     * "departement": {
+     * "id": 1
      * }
-     *
+     * }
      */
-
     @PostMapping
     public ResponseEntity<String> ajouterVille(@Valid @RequestBody Ville nouvelleVille, BindingResult result) {
         if (result.hasErrors()) {
@@ -88,7 +106,13 @@ public class VilleControleur {
         return ResponseEntity.ok("Ville insérée avec succès");
     }
 
-    // ---------------- PUT ----------------
+    /**
+     * Modifie une ville existante par son ID.
+     * @param id l'ID de la ville à modifier.
+     * @param villeModifiee la ville avec les données modifiées.
+     * @param result le résultat de la validation.
+     * @return une réponse indiquant le succès ou l'échec de l'opération.
+     */
     @PutMapping("/{id}")
     public ResponseEntity<String> modifierVille(@PathVariable int id, @Valid @RequestBody Ville villeModifiee, BindingResult result) {
         if (result.hasErrors()) {
@@ -108,7 +132,11 @@ public class VilleControleur {
         return ResponseEntity.ok("Ville modifiée avec succès");
     }
 
-    // ---------------- DELETE ----------------
+    /**
+     * Supprime une ville par son ID.
+     * @param id l'ID de la ville à supprimer.
+     * @return une réponse indiquant le succès ou l'échec de l'opération.
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<String> supprimerVille(@PathVariable int id) {
         Ville existing = villeService.extractVille(id);
