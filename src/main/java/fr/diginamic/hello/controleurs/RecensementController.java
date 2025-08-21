@@ -36,7 +36,7 @@ public class RecensementController {
         }
     }
 
-//http://localhost:8080/recensement/villes-population/Herault/30000/350000
+    //http://localhost:8080/recensement/villes-population/Herault/30000/350000
     @GetMapping("/villes-population/{nomDepartement}/{min}/{max}")
     public ResponseEntity<List<Ville>> getVillesByPopulationAndDepartement(
             @PathVariable String nomDepartement,
@@ -44,12 +44,7 @@ public class RecensementController {
             @PathVariable int max) {
 
         List<Ville> villes = villeService.extractVillesByPopulationAndDepartement(nomDepartement, min, max);
-
-        if (villes != null) {
-            return ResponseEntity.ok(villes);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        return ResponseEntity.ok(villes); // Always return 200 OK with the list (empty or not)
     }
 
 

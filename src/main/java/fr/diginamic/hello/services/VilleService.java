@@ -5,6 +5,7 @@ import fr.diginamic.hello.Ville;
 import fr.diginamic.hello.dao.VilleDao;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 @Service
@@ -24,7 +25,7 @@ public class VilleService {
         if (departement != null) {
             return villeDao.findTopNVillesByDepartement(departement, n);
         }
-        return null;
+        return Collections.emptyList();
     }
 
     public List<Ville> extractVillesByPopulationAndDepartement(String nomDepartement, int min, int max) {
@@ -32,7 +33,7 @@ public class VilleService {
         if (departement != null) {
             return villeDao.findByDepartementAndNbHabitantsBetween(departement, min, max);
         }
-        return null;
+        return Collections.emptyList();
     }
 
     // Liste toutes les villes
