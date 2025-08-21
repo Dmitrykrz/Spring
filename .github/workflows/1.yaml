@@ -1,13 +1,13 @@
 name: Simple Workflow, Password Checker
 
 on:
-  #push:
-  #  branches:
-  #    - main
-  #pull_request:
-  #  branches:
-  #    - main
-  workflow_dispatch:    
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  #workflow_dispatch:
 
 jobs:
   check-for-passwords-in-code:
