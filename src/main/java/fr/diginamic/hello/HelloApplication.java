@@ -31,19 +31,19 @@ public class HelloApplication {
                 villeService.insertVille(montpellier);
             }
 
-            Ville Lattes = villeService.extractVille("Lattes");
-            if (Lattes == null) {
-                Lattes = new Ville("Lattes", 3000);
-                Lattes.setDepartement(herault);
-                villeService.insertVille(Lattes);
+            Ville lattes = villeService.extractVille("Lattes");
+            if (lattes == null) {
+                lattes = new Ville("Lattes", 3000);
+                lattes.setDepartement(herault);
+                villeService.insertVille(lattes);
             }
 
 
-            Ville Bezier = villeService.extractVille("Bezier");
-            if (Bezier == null) {
-                Bezier = new Ville("Bezier", 20000);
-                Bezier.setDepartement(herault);
-                villeService.insertVille(Bezier);
+            Ville bezier = villeService.extractVille("Bezier");
+            if (bezier == null) {
+                bezier = new Ville("Bezier", 20000);
+                bezier.setDepartement(herault);
+                villeService.insertVille(bezier);
             }
 
 
@@ -53,22 +53,6 @@ public class HelloApplication {
     }
 }
 
-//http://localhost:8080/departements
-
-//{
-//        "nom": "Occitanie"
-//        }
-
-
-
-//http://localhost:8080/villes
-//{
-//  "nom": "Lattes",
-//  "nbHabitants": 3000,
-//  "departement": {
-//    "id": 1
-//  }
-//}
 
 
 
