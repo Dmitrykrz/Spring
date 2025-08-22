@@ -3,7 +3,7 @@ package fr.diginamic.hello.services;
 import fr.diginamic.hello.Departement;
 import fr.diginamic.hello.Ville;
 import fr.diginamic.hello.dao.VilleDao;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -17,6 +17,7 @@ public class VilleService {
     private final VilleDao villeDao;
     //@Autowired              !!!!! NOT RECOMMENDED
     //VilleDao villeDao;      !!!!! NOT RECOMMENDED
+
     private final DepartementService departementService;
 //
     /**
