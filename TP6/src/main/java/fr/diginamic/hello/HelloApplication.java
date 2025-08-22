@@ -20,7 +20,6 @@ public class HelloApplication {
             Departement herault = departementService.extractDepartement("Hérault");
             if (herault == null) {
                 herault = new Departement();
-                herault.setId(34); // <-- Add this line to set the ID
                 herault.setNom("Hérault");
                 departementService.insertDepartement(herault);
             }

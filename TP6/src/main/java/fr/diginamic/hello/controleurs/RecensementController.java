@@ -2,8 +2,6 @@
     package fr.diginamic.hello.controleurs;
 
     import fr.diginamic.hello.Ville;
-    import fr.diginamic.hello.dto.VilleDto;
-    import fr.diginamic.hello.mappers.VilleMapper;
     import fr.diginamic.hello.services.VilleService;
     import org.springframework.http.HttpStatus;
     import org.springframework.http.ResponseEntity;
@@ -13,7 +11,6 @@
     import org.springframework.web.bind.annotation.RestController;
 
     import java.util.List;
-    import java.util.stream.Collectors;
 
     /**
      * Contrôleur REST pour les données de recensement.
@@ -44,30 +41,36 @@
          *
          *
          */
-        @GetMapping("/top-n-villes-departement/{nomDepartement}/{n}")
-        public ResponseEntity<List<VilleDto>> getTopNVillesByDepartement(@PathVariable String nomDepartement, @PathVariable int n) {
+        @GetMapping("/top-villes/{nomDepartement}/{n}")
+        public ResponseEntity<List<Ville>> getTopNVillesByDepartement(@PathVariable String nomDepartement, @PathVariable int n) {
             List<Ville> topVilles = villeService.extractTopNVillesByDepartement(nomDepartement, n);
             if (topVilles != null && !topVilles.isEmpty()) {
-                List<VilleDto> dtoList = topVilles.stream()
-                        .map(VilleMapper::toDto)
-                        .collect(Collectors.toList());
-                return ResponseEntity.ok(dtoList);
+                return ResponseEntity.ok(topVilles);
             } else if (topVilles != null) {
-                return ResponseEntity.ok(List.of()); // Retourne une liste vide si le département existe mais n'a pas de villes
+                return ResponseEntity.ok(topVilles);
             } else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
         }
 
+        /**
+         * Extrait les villes d'un département avec une population entre min et max.
+         * @param nomDepartement le nom du département.
+         * @param min la population minimale.
+         * @param max la population maximale.
+         * @return une liste de villes.
+         *
+         * EXAMPLE
+         *
+         *      http://localhost:8080/recensement/villes-population/Herault/30000/350000
+         */
         @GetMapping("/villes-population/{nomDepartement}/{min}/{max}")
-        public ResponseEntity<List<VilleDto>> getVillesByPopulationAndDepartement(
+        public ResponseEntity<List<Ville>> getVillesByPopulationAndDepartement(
                 @PathVariable String nomDepartement,
                 @PathVariable int min,
                 @PathVariable int max) {
+
             List<Ville> villes = villeService.extractVillesByPopulationAndDepartement(nomDepartement, min, max);
-            List<VilleDto> dtoList = villes.stream()
-                    .map(VilleMapper::toDto)
-                    .collect(Collectors.toList());
-            return ResponseEntity.ok(dtoList);
+            return ResponseEntity.ok(villes); // Always return 200 OK with the list (empty or not)
         }
     }

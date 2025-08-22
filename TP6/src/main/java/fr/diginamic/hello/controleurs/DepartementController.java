@@ -1,8 +1,6 @@
 package fr.diginamic.hello.controleurs;
 
 import fr.diginamic.hello.Departement;
-import fr.diginamic.hello.dto.DepartementDto;
-import fr.diginamic.hello.mappers.DepartementMapper;
 import fr.diginamic.hello.services.DepartementService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -32,20 +30,27 @@ public class DepartementController {
         this.departementService = departementService;
     }
 
-
+    /**
+     * Récupère tous les départements.
+     * @return une liste de tous les départements.
+     */
+    @GetMapping
+    public List<Departement> getDepartements() {
+        return departementService.extractDepartements();
+    }
 
     /**
      * Récupère un département par son ID.
      * @param id l'ID du département.
      * @return le département ou une réponse 404 si non trouvé.
      */
-    @GetMapping("/{id}")
-    public ResponseEntity<Object> getDepartementById(@PathVariable int id) {
-        Departement departement = departementService.extractDepartement(id);
-        if (departement == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Département id non trouvée");
+    @GetMapping("/id/{id}")
+    public ResponseEntity<Departement> getDepartementById(@PathVariable int id) {
+        Departement d = departementService.extractDepartement(id);
+        if (d != null) {
+            return ResponseEntity.ok(d);
         }
-        return ResponseEntity.ok(DepartementMapper.toDto(departement));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
     /**
@@ -53,14 +58,14 @@ public class DepartementController {
      * @param nom le nom du département.
      * @return le département ou une réponse 404 si non trouvé.
      */
-    @GetMapping
-    public List<DepartementDto> getDepartements() {
-        return departementService.extractDepartements()
-                .stream()
-                .map(DepartementMapper::toDto)
-                .collect(Collectors.toList());
+    @GetMapping("/nom/{nom}")
+    public ResponseEntity<Departement> getDepartementByNom(@PathVariable String nom) {
+        Departement d = departementService.extractDepartement(nom);
+        if (d != null) {
+            return ResponseEntity.ok(d);
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
-
 
     /**
      * Ajoute un nouveau département.
@@ -96,7 +101,7 @@ public class DepartementController {
      * @return une réponse indiquant le succès ou l'échec de l'opération.
      */
     @PutMapping("/{id}")
-    public ResponseEntity<String> modifierDepartement(@PathVariable int id, @Valid @RequestBody DepartementDto departementModifie, BindingResult result) {
+    public ResponseEntity<String> modifierDepartement(@PathVariable int id, @Valid @RequestBody Departement departementModifie, BindingResult result) {
         if (result.hasErrors()) {
             String errors = result.getAllErrors()
                     .stream()
@@ -110,13 +115,9 @@ public class DepartementController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Département id non trouvée");
         }
 
-        // Mettre à jour seulement les champs nécessaires (ici, le nom)
-        existing.setNom(departementModifie.getNom());
-        departementService.modifierDepartement(id, existing);
-
+        departementService.modifierDepartement(id, departementModifie);
         return ResponseEntity.ok("Département modifié avec succès");
     }
-
 
     /**
      * Supprime un département par son ID.

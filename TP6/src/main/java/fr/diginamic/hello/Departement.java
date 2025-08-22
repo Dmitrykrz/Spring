@@ -9,16 +9,15 @@ import java.util.List;
 @Entity
 public class Departement {
 
-
-    @Column(unique = true)
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(unique = true)
     @NotNull
     private String nom;
 
     @OneToMany(mappedBy = "departement", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<Ville> villes;
 
     // Getters et setters

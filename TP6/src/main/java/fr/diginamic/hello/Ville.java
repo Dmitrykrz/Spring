@@ -11,9 +11,6 @@ public class Ville {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
-
-    @Column(unique = true)
     @NotNull
     @Size(min=2, message="Town name must be >2 characters")
     private String nom;

@@ -1,10 +1,6 @@
 package fr.diginamic.hello.controleurs;
 
-import fr.diginamic.hello.Departement;
 import fr.diginamic.hello.Ville;
-import fr.diginamic.hello.dto.VilleDto;
-import fr.diginamic.hello.mappers.VilleMapper;
-import fr.diginamic.hello.services.DepartementService;
 import fr.diginamic.hello.services.VilleService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -23,17 +19,15 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/villes")
 public class VilleControleur {
+
     private final VilleService villeService;
-    private final DepartementService departementService;
 
     /**
      * Constructeur.
      * @param villeService le service pour les villes.
-     * @param departementService le service pour les départements.
      */
-    public VilleControleur(VilleService villeService, DepartementService departementService) {
+    public VilleControleur(VilleService villeService) {
         this.villeService = villeService;
-        this.departementService = departementService;
     }
 
     /**
@@ -41,11 +35,8 @@ public class VilleControleur {
      * @return une liste de toutes les villes.
      */
     @GetMapping
-    public List<VilleDto> getVilles() {
-        return villeService.extractVilles()
-                .stream()
-                .map(VilleMapper::toDto)
-                .collect(Collectors.toList());
+    public List<Ville> getVilles() {
+        return villeService.extractVilles();
     }
 
     /**
@@ -53,13 +44,13 @@ public class VilleControleur {
      * @param id l'ID de la ville.
      * @return la ville ou une réponse 404 si non trouvée.
      */
-    @GetMapping("id/{id}")
-    public ResponseEntity<Object> getVilleById(@PathVariable int id) {
-        Ville ville = villeService.extractVille(id);
-        if (ville == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Ville id non trouvée");
+    @GetMapping("/id/{id}")
+    public ResponseEntity<Ville> getVilleById(@PathVariable int id) {
+        Ville v = villeService.extractVille(id);
+        if (v != null) {
+            return ResponseEntity.ok(v);
         }
-        return ResponseEntity.ok(VilleMapper.toDto(ville));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
     /**
@@ -78,12 +69,20 @@ public class VilleControleur {
 
     /**
      * Ajoute une nouvelle ville.
-     * @param dto le DTO de la nouvelle ville à ajouter.
+     * @param nouvelleVille la nouvelle ville à ajouter.
      * @param result le résultat de la validation.
      * @return une réponse indiquant le succès ou l'échec de l'opération.
+     * Example:
+     * {
+     * "nom": "Lattes",
+     * "nbHabitants": 3000,
+     * "departement": {
+     * "id": 1
+     * }
+     * }
      */
     @PostMapping
-    public ResponseEntity<String> creerVille(@Valid @RequestBody VilleDto dto, BindingResult result) {
+    public ResponseEntity<String> ajouterVille(@Valid @RequestBody Ville nouvelleVille, BindingResult result) {
         if (result.hasErrors()) {
             String errors = result.getAllErrors()
                     .stream()
@@ -92,26 +91,30 @@ public class VilleControleur {
             return ResponseEntity.badRequest().body("Validation errors: " + errors);
         }
 
-        Departement departement = departementService.extractDepartement(dto.getIdDepartement());
-        if (departement == null) {
-            return ResponseEntity.badRequest().body("Departement non trouvée");
+        Ville existing = villeService.extractVille(nouvelleVille.getNom());
+        if (existing != null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("La ville existe déjà");
         }
 
-        Ville newVille = VilleMapper.toEntity(dto, departement);
-        villeService.insertVille(newVille);
+        if (nouvelleVille.getDepartement() == null) {
+            return ResponseEntity.badRequest().body("No department dans une Ville");
+        }
 
-        return ResponseEntity.ok("Ville créée avec succès");
+
+        villeService.insertVille(nouvelleVille);
+        return ResponseEntity.ok("Ville insérée avec succès");
     }
 
     /**
      * Modifie une ville existante par son ID.
      * @param id l'ID de la ville à modifier.
-     * @param dto le DTO de la ville avec les données modifiées.
+     * @param villeModifiee la ville avec les données modifiées.
      * @param result le résultat de la validation.
      * @return une réponse indiquant le succès ou l'échec de l'opération.
      */
     @PutMapping("/{id}")
-    public ResponseEntity<String> modifierVille(@PathVariable int id, @Valid @RequestBody VilleDto dto, BindingResult result) {
+    public ResponseEntity<String> modifierVille(@PathVariable int id, @Valid @RequestBody Ville villeModifiee, BindingResult result) {
         if (result.hasErrors()) {
             String errors = result.getAllErrors()
                     .stream()
@@ -125,11 +128,7 @@ public class VilleControleur {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Ville id non trouvée");
         }
 
-        existing.setNom(dto.getNom());
-        existing.setNbHabitants(dto.getNbHabitants());
-        // Pour l'instant, le département n'est pas modifié ici
-        villeService.modifierVille(id, existing);
-
+        villeService.modifierVille(id, villeModifiee);
         return ResponseEntity.ok("Ville modifiée avec succès");
     }
 
