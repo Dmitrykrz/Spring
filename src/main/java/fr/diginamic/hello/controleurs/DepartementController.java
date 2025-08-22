@@ -58,7 +58,7 @@ public class DepartementController {
         return departementService.extractDepartements()
                 .stream()
                 .map(DepartementMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
 

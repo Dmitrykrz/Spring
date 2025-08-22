@@ -21,7 +21,7 @@ public class DepartementMapper {
         dto.setVilles(entity.getVilles()
                 .stream()
                 .map(VilleMapper::toDto)
-                .collect(Collectors.toList()));
+                .toList());
         return dto;
     }
 }

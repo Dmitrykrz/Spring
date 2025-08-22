@@ -50,7 +50,7 @@
             if (topVilles != null && !topVilles.isEmpty()) {
                 List<VilleDto> dtoList = topVilles.stream()
                         .map(VilleMapper::toDto)
-                        .collect(Collectors.toList());
+                        .toList();
                 return ResponseEntity.ok(dtoList);
             } else if (topVilles != null) {
                 return ResponseEntity.ok(List.of()); // Retourne une liste vide si le département existe mais n'a pas de villes
@@ -67,7 +67,7 @@
             List<Ville> villes = villeService.extractVillesByPopulationAndDepartement(nomDepartement, min, max);
             List<VilleDto> dtoList = villes.stream()
                     .map(VilleMapper::toDto)
-                    .collect(Collectors.toList());
+                    .toList();
             return ResponseEntity.ok(dtoList);
         }
     }

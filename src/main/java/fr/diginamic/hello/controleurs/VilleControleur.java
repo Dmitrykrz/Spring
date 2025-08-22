@@ -45,7 +45,7 @@ public class VilleControleur {
         return villeService.extractVilles()
                 .stream()
                 .map(VilleMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**
