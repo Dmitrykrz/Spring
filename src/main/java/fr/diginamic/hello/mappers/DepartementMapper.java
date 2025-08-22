@@ -2,7 +2,7 @@ package fr.diginamic.hello.mappers;
 
 import fr.diginamic.hello.Departement;
 import fr.diginamic.hello.dto.DepartementDto;
-import java.util.stream.Collectors;
+
 
 public class DepartementMapper {
 
@@ -19,10 +19,6 @@ public class DepartementMapper {
 
     private DepartementMapper() {
         throw new UnsupportedOperationException("Utility class");
-
-
-
-
     }
     /**
      * Converts a Departement entity to a DepartementDto.

@@ -13,7 +13,7 @@
     import org.springframework.web.bind.annotation.RestController;
 
     import java.util.List;
-   
+
 
     /**
      * Contrôleur REST pour les données de recensement.

@@ -9,6 +9,12 @@ import fr.diginamic.hello.dto.VilleDto;
  */
 public class VilleMapper {
 
+
+    private VilleMapper() {
+        throw new UnsupportedOperationException("Utility class");
+    }
+
+
     /**
      * Convertit une entité Ville en un DTO VilleDto.
      * @param ville l'entité Ville à convertir.
