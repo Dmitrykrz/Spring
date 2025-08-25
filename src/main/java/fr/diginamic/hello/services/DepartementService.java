@@ -33,6 +33,11 @@ public class DepartementService {
         return departementRepository.findByNomIgnoreCase(nom);
     }
 
+    /** Extrait un département par son code */
+    public Optional<Departement> extractDepartementByCode(String code) {
+        return departementRepository.findByCodeIgnoreCase(code);
+    }
+
     /** Insère un département */
     public void insertDepartement(Departement d) {
         departementRepository.save(d);
@@ -42,6 +47,7 @@ public class DepartementService {
     public void modifierDepartement(int id, Departement departementModifie) {
         departementRepository.findById(id).ifPresent(existing -> {
             existing.setNom(departementModifie.getNom());
+            existing.setCode(departementModifie.getCode());
             existing.setVilles(departementModifie.getVilles());
             departementRepository.save(existing);
         });

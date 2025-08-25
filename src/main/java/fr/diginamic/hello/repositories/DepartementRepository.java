@@ -18,6 +18,13 @@ public interface DepartementRepository extends JpaRepository<Departement, Intege
     Optional<Departement> findByNomIgnoreCase(String nom);
 
     /**
+     * Recherche un département par son code (insensible à la casse).
+     * @param code le code du département.
+     * @return un Optional contenant le département si trouvé.
+     */
+    Optional<Departement> findByCodeIgnoreCase(String code);
+
+    /**
      * Recherche les départements dont le nom contient une chaîne (insensible à la casse).
      * @param fragment partie du nom.
      * @return liste des départements trouvés.

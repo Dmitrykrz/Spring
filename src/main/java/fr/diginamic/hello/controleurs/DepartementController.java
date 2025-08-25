@@ -80,7 +80,9 @@ public class DepartementController {
             return ResponseEntity.badRequest().body("Validation errors: " + errors);
         }
 
-        boolean exists = departementService.extractDepartement(nouveauDepartement.getNom()).isPresent();
+        boolean exists = departementService.extractDepartement(nouveauDepartement.getNom()).isPresent() ||
+                departementService.extractDepartementByCode(nouveauDepartement.getCode()).isPresent();
+
         if (exists) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("Le département existe déjà");
@@ -114,8 +116,9 @@ public class DepartementController {
         }
 
         Departement existing = existingOpt.get();
-        // Mettre à jour seulement les champs nécessaires (ici, le nom)
+        // Mettre à jour seulement les champs nécessaires (ici, le nom et le code)
         existing.setNom(departementModifie.getNom());
+        existing.setCode(departementModifie.getCode());
         departementService.modifierDepartement(id, existing);
 
         return ResponseEntity.ok("Département modifié avec succès");

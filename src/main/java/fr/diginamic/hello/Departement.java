@@ -3,6 +3,7 @@ package fr.diginamic.hello;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.util.List;
 
@@ -10,12 +11,15 @@ import java.util.List;
 public class Departement {
 
 
-    @Column(unique = true)
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(unique = true)
-    @NotNull
+    @Column(name = "code")
+    private String code;
+
+    @Size(max = 255)
+    @Column(name = "nom")
     private String nom;
 
     @OneToMany(mappedBy = "departement", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -24,6 +28,14 @@ public class Departement {
     // Getters et setters
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
 
     public String getNom() { return nom; }
     public void setNom(String nom) { this.nom = nom; }

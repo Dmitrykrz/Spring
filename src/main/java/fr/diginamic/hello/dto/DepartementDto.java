@@ -1,13 +1,13 @@
 package fr.diginamic.hello.dto;
 
-import java.util.List;
-
 public class DepartementDto {
     private int id;
     private String nom;
-    private List<VilleDto> villes; // List of DTOs to avoid circular reference
+    private String code;
 
-    // Getters and setters
+    public DepartementDto() {
+    }
+
     public int getId() {
         return id;
     }
@@ -24,11 +24,11 @@ public class DepartementDto {
         this.nom = nom;
     }
 
-    public List<VilleDto> getVilles() {
-        return villes;
+    public String getCode() {
+        return code;
     }
 
-    public void setVilles(List<VilleDto> villes) {
-        this.villes = villes;
+    public void setCode(String code) {
+        this.code = code;
     }
 }

@@ -160,4 +160,83 @@ public class VilleControleur {
         villeService.supprimerVille(id);
         return ResponseEntity.ok("Ville supprimée");
     }
+
+    /**
+     * Récupère toutes les villes dont le nom commence par un fragment donné.
+     * Endpoint : GET /villes/search/by-name-fragment/{fragment}
+     * @param fragment le fragment de nom.
+     * @return une liste des villes trouvées.
+     */
+    @GetMapping("/search/by-name-fragment/{fragment}")
+    public ResponseEntity<List<VilleDto>> getVillesByNameFragment(@PathVariable String fragment) {
+        List<Ville> villes = villeService.extractVillesByNameFragment(fragment);
+        List<VilleDto> dtoList = villes.stream()
+                .map(VilleMapper::toDto)
+                .toList();
+        return ResponseEntity.ok(dtoList);
+    }
+
+    /**
+     * Récupère toutes les villes dont la population est supérieure à une valeur minimale.
+     * Endpoint : GET /villes/search/population/greater-than/{min}
+     * @param min la population minimale.
+     * @return une liste des villes trouvées, triées par population descendante.
+     */
+    @GetMapping("/search/population/greater-than/{min}")
+    public ResponseEntity<List<VilleDto>> getVillesByPopulationGreaterThan(@PathVariable int min) {
+        List<Ville> villes = villeService.extractVillesByPopulationGreaterThan(min);
+        List<VilleDto> dtoList = villes.stream()
+                .map(VilleMapper::toDto)
+                .toList();
+        return ResponseEntity.ok(dtoList);
+    }
+
+    /**
+     * Récupère toutes les villes dont la population est comprise entre min et max.
+     * Endpoint : GET /villes/search/population/between/{min}/{max}
+     * @param min la population minimale.
+     * @param max la population maximale.
+     * @return une liste des villes trouvées, triées par population descendante.
+     */
+    @GetMapping("/search/population/between/{min}/{max}")
+    public ResponseEntity<List<VilleDto>> getVillesByPopulationBetween(@PathVariable int min, @PathVariable int max) {
+        List<Ville> villes = villeService.extractVillesByPopulationBetween(min, max);
+        List<VilleDto> dtoList = villes.stream()
+                .map(VilleMapper::toDto)
+                .toList();
+        return ResponseEntity.ok(dtoList);
+    }
+
+    /**
+     * Récupère toutes les villes d'un département donné dont la population est supérieure à min.
+     * Endpoint : GET /villes/search/by-departement/{nomDepartement}/population/greater-than/{min}
+     * @param nomDepartement le nom du département.
+     * @param min la population minimale.
+     * @return une liste des villes trouvées.
+     */
+    @GetMapping("/search/by-departement/{nomDepartement}/population/greater-than/{min}")
+    public ResponseEntity<List<VilleDto>> getVillesByDepartementAndPopulationGreaterThan(@PathVariable String nomDepartement, @PathVariable int min) {
+        List<Ville> villes = villeService.extractVillesByDepartementAndPopulationGreaterThan(nomDepartement, min);
+        List<VilleDto> dtoList = villes.stream()
+                .map(VilleMapper::toDto)
+                .toList();
+        return ResponseEntity.ok(dtoList);
+    }
+
+    /**
+     * Récupère toutes les villes d'un département donné dont la population est comprise entre min et max.
+     * Endpoint : GET /villes/search/by-departement/{nomDepartement}/population/between/{min}/{max}
+     * @param nomDepartement le nom du département.
+     * @param min la population minimale.
+     * @param max la population maximale.
+     * @return une liste des villes trouvées.
+     */
+    @GetMapping("/search/by-departement/{nomDepartement}/population/between/{min}/{max}")
+    public ResponseEntity<List<VilleDto>> getVillesByDepartementAndPopulationBetween(@PathVariable String nomDepartement, @PathVariable int min, @PathVariable int max) {
+        List<Ville> villes = villeService.extractVillesByDepartementAndPopulationBetween(nomDepartement, min, max);
+        List<VilleDto> dtoList = villes.stream()
+                .map(VilleMapper::toDto)
+                .toList();
+        return ResponseEntity.ok(dtoList);
+    }
 }

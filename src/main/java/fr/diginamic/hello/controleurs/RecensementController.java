@@ -59,6 +59,15 @@
             }
         }
 
+        @GetMapping("/top-n-villes/{n}")
+        public ResponseEntity<List<VilleDto>> getTopNVilles(@PathVariable int n) {
+            List<Ville> topVilles = villeService.extractTopNVilles(n);
+            List<VilleDto> dtoList = topVilles.stream()
+                    .map(VilleMapper::toDto)
+                    .toList();
+            return ResponseEntity.ok(dtoList);
+        }
+
         @GetMapping("/villes-population/{nomDepartement}/{min}/{max}")
         public ResponseEntity<List<VilleDto>> getVillesByPopulationAndDepartement(
                 @PathVariable String nomDepartement,

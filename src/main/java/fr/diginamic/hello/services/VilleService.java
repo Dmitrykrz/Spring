@@ -4,8 +4,11 @@ package fr.diginamic.hello.services;
 import fr.diginamic.hello.Ville;
 import fr.diginamic.hello.repositories.VilleRepository;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.awt.print.Pageable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -42,7 +45,10 @@ public class VilleService {
                 .orElse(Collections.emptyList());
     }
 
-
+    public List<Ville> extractTopNVilles(int n) {
+        PageRequest pageRequest = PageRequest.of(0, n, Sort.by("nbHabitants").descending());
+        return villeRepository.findByOrderByNbHabitantsDesc(pageRequest);
+    }
     /**
      * Extrait les villes d'un département avec une population entre min et max.
      * @param nomDepartement nom du département.
@@ -121,4 +127,51 @@ public class VilleService {
         villeRepository.deleteById(idVille);
         return villeRepository.findAll();
     }
+
+    /**
+     * Recherche toutes les villes dont le nom commence par une chaîne donnée.
+     * @param nomFragment le fragment de nom.
+     * @return une liste des villes trouvées.
+     */
+    public List<Ville> extractVillesByNameFragment(String nomFragment) {
+        return villeRepository.findByNomStartingWithIgnoreCase(nomFragment);
+    }
+
+    /**
+     * Recherche toutes les villes dont la population est supérieure à min.
+     * @param min la population minimale.
+     * @return une liste des villes triées par population descendante.
+     */
+    public List<Ville> extractVillesByPopulationGreaterThan(int min) {
+        return villeRepository.findByNbHabitantsGreaterThanOrderByNbHabitantsDesc(min);
+    }
+
+    /**
+     * Recherche toutes les villes dont la population est comprise entre min et max.
+     * @param min la population minimale.
+     * @param max la population maximale.
+     * @return une liste des villes triées par population descendante.
+     */
+    public List<Ville> extractVillesByPopulationBetween(int min, int max) {
+        return villeRepository.findByNbHabitantsBetweenOrderByNbHabitantsDesc(min, max);
+    }
+
+    /**
+     * Recherche toutes les villes d'un département dont la population est supérieure à min.
+     * @param nomDepartement nom du département.
+     * @param min la population minimale.
+     * @return une liste des villes triées par population descendante.
+     */
+    public List<Ville> extractVillesByDepartementAndPopulationGreaterThan(String nomDepartement, int min) {
+        return departementService.extractDepartement(nomDepartement)
+                .map(departement -> villeRepository.findByDepartementAndNbHabitantsGreaterThanOrderByNbHabitantsDesc(departement, min))
+                .orElse(Collections.emptyList());
+    }
+
+    public List<Ville> extractVillesByDepartementAndPopulationBetween(String nomDepartement, int min, int max) {
+        return departementService.extractDepartement(nomDepartement)
+                .map(departement -> villeRepository.findByDepartementAndNbHabitantsBetweenOrderByNbHabitantsDesc(departement, min, max))
+                .orElse(Collections.emptyList());
+    }
+
 }
