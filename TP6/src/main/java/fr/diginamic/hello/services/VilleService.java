@@ -2,7 +2,7 @@ package fr.diginamic.hello.services;
 
 import fr.diginamic.hello.Departement;
 import fr.diginamic.hello.Ville;
-import fr.diginamic.hello.Repositories.VilleDao;
+import fr.diginamic.hello.repositories.VilleDao;
 
 import org.springframework.stereotype.Service;
 
