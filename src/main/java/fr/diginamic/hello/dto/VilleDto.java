@@ -19,7 +19,7 @@ public class VilleDto {
     @Min(1)
     private int nbHabitants;
 
-    // L'ID du département est maintenant utilisé au lieu du nom
+
     @Min(1)
     private int idDepartement;
 

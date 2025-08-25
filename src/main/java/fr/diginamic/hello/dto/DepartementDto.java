@@ -5,9 +5,6 @@ public class DepartementDto {
     private String nom;
     private String code;
 
-    public DepartementDto() {
-        throw new UnsupportedOperationException("Utility class");
-    }
 
     public int getId() {
         return id;

@@ -51,9 +51,7 @@ public class DepartementController {
 
 
     /**
-     * Récupère un département par son nom.
-     * @param nom le nom du département.
-     * @return le département ou une réponse 404 si non trouvé.
+     * @return
      */
     @GetMapping
     public List<DepartementDto> getDepartements() {
