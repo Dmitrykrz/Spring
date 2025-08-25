@@ -6,6 +6,7 @@ public class DepartementDto {
     private String code;
 
     public DepartementDto() {
+        throw new UnsupportedOperationException("Utility class");
     }
 
     public int getId() {

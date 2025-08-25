@@ -4,7 +4,9 @@ import fr.diginamic.hello.Departement;
 import fr.diginamic.hello.dto.DepartementDto;
 
 public class DepartementMapper {
-
+    private DepartementMapper() {
+        throw new UnsupportedOperationException("Utility class");
+    }
     /**
      * Convertit une entité Departement en DTO.
      *
