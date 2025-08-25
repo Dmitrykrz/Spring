@@ -1,4 +1,4 @@
-package fr.diginamic.hello.dao;
+package fr.diginamic.hello.Repositories;
 
 import fr.diginamic.hello.Departement;
 import fr.diginamic.hello.Ville;

@@ -2,7 +2,7 @@ package fr.diginamic.hello.services;
 
 import fr.diginamic.hello.Departement;
 import fr.diginamic.hello.Ville;
-import fr.diginamic.hello.dao.VilleDao;
+import fr.diginamic.hello.Repositories.VilleRepository;
 
 import org.springframework.stereotype.Service;
 
@@ -14,7 +14,7 @@ import java.util.Optional;
 @Service
 public class VilleService {
 
-    private final VilleDao villeDao;
+    private final VilleRepository villeRepository;
     //@Autowired              !!!!! NOT RECOMMENDED
     //VilleDao villeDao;      !!!!! NOT RECOMMENDED
 
@@ -22,11 +22,11 @@ public class VilleService {
 //
     /**
      * Constructeur.
-     * @param villeDao le DAO pour les entités Ville.
+     * @param villeRepository le DAO pour les entités Ville.
      * @param departementService le service pour les départements.
      */
-    public VilleService(VilleDao villeDao, DepartementService departementService) {
-        this.villeDao = villeDao;
+    public VilleService(VilleRepository villeRepository, DepartementService departementService) {
+        this.villeRepository = villeRepository;
         this.departementService = departementService;
     }
 
@@ -37,12 +37,11 @@ public class VilleService {
      * @return une liste des N villes, ou une liste vide si le département n'est pas trouvé.
      */
     public List<Ville> extractTopNVillesByDepartement(String nomDepartement, int n) {
-        Departement departement = departementService.extractDepartement(nomDepartement);
-        if (departement != null) {
-            return villeDao.findTopNVillesByDepartement(departement, n);
-        }
-        return Collections.emptyList();
+        return departementService.extractDepartement(nomDepartement)
+                .map(departement -> villeRepository.findTopNVillesByDepartement(departement, n))
+                .orElse(Collections.emptyList());
     }
+
 
     /**
      * Extrait les villes d'un département avec une population entre min et max.
@@ -52,19 +51,20 @@ public class VilleService {
      * @return une liste des villes, ou une liste vide si le département n'est pas trouvé.
      */
     public List<Ville> extractVillesByPopulationAndDepartement(String nomDepartement, int min, int max) {
-        Departement departement = departementService.extractDepartement(nomDepartement);
-        if (departement != null) {
-            return villeDao.findByDepartementAndNbHabitantsBetween(departement, min, max);
-        }
-        return Collections.emptyList();
+        return departementService.extractDepartement(nomDepartement)
+                .map(departement -> villeRepository.findByDepartementAndNbHabitantsBetween(departement, min, max))
+                .orElse(Collections.emptyList());
     }
 
+    public Optional<Ville> extractVilleOptional(String nom) {
+        return villeRepository.findByNomIgnoreCase(nom);
+    }
     /**
      * Extrait toutes les villes.
      * @return la liste de toutes les villes.
      */
     public List<Ville> extractVilles() {
-        return villeDao.findAll();
+        return villeRepository.findAll();
     }
 
     /**
@@ -73,7 +73,7 @@ public class VilleService {
      * @return la ville ou null si non trouvée.
      */
     public Ville extractVille(int idVille) {
-        return villeDao.findById(idVille).orElse(null);
+        return villeRepository.findById(idVille).orElse(null);
     }
 
     /**
@@ -82,7 +82,7 @@ public class VilleService {
      * @return la ville ou null si non trouvée.
      */
     public Ville extractVille(String nom) {
-        return villeDao.findByNomIgnoreCase(nom).orElse(null);
+        return villeRepository.findByNomIgnoreCase(nom).orElse(null);
     }
 
     /**
@@ -91,8 +91,8 @@ public class VilleService {
      * @return la liste de toutes les villes après l'insertion.
      */
     public List<Ville> insertVille(Ville ville) {
-        villeDao.save(ville);
-        return villeDao.findAll();
+        villeRepository.save(ville);
+        return villeRepository.findAll();
     }
 
     /**
@@ -102,14 +102,14 @@ public class VilleService {
      * @return la liste de toutes les villes après la modification.
      */
     public List<Ville> modifierVille(int idVille, Ville villeModifiee) {
-        Optional<Ville> villeOptional = villeDao.findById(idVille);
+        Optional<Ville> villeOptional = villeRepository.findById(idVille);
         if (villeOptional.isPresent()) {
             Ville v = villeOptional.get();
             v.setNom(villeModifiee.getNom());
             v.setNbHabitants(villeModifiee.getNbHabitants());
-            villeDao.save(v);
+            villeRepository.save(v);
         }
-        return villeDao.findAll();
+        return villeRepository.findAll();
     }
 
     /**
@@ -118,7 +118,7 @@ public class VilleService {
      * @return la liste de toutes les villes après la suppression.
      */
     public List<Ville> supprimerVille(int idVille) {
-        villeDao.deleteById(idVille);
-        return villeDao.findAll();
+        villeRepository.deleteById(idVille);
+        return villeRepository.findAll();
     }
 }

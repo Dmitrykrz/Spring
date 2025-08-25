@@ -14,6 +14,7 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -92,9 +93,18 @@ public class VilleControleur {
             return ResponseEntity.badRequest().body("Validation errors: " + errors);
         }
 
-        Departement departement = departementService.extractDepartement(dto.getIdDepartement());
-        if (departement == null) {
+        Optional<Departement> departementOpt = departementService.extractDepartement(dto.getIdDepartement());
+        if (departementOpt.isEmpty()) {
             return ResponseEntity.badRequest().body("Departement non trouvée");
+        }
+
+        Departement departement = departementOpt.get();
+
+        // Check if a Ville with this name already exists
+        Optional<Ville> existingVille = villeService.extractVilleOptional(dto.getNom());
+        if (existingVille.isPresent()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Ville avec ce nom existe déjà");
         }
 
         Ville newVille = VilleMapper.toEntity(dto, departement);
@@ -102,6 +112,8 @@ public class VilleControleur {
 
         return ResponseEntity.ok("Ville créée avec succès");
     }
+
+
 
     /**
      * Modifie une ville existante par son ID.

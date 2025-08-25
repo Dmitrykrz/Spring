@@ -12,6 +12,7 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -41,12 +42,13 @@ public class DepartementController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<Object> getDepartementById(@PathVariable int id) {
-        Departement departement = departementService.extractDepartement(id);
-        if (departement == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Département id non trouvée");
-        }
-        return ResponseEntity.ok(DepartementMapper.toDto(departement));
+        return departementService.extractDepartement(id)
+                .<ResponseEntity<Object>>map(d -> ResponseEntity.ok(DepartementMapper.toDto(d)))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("Département id non trouvée"));
+
     }
+
 
     /**
      * Récupère un département par son nom.
@@ -78,8 +80,8 @@ public class DepartementController {
             return ResponseEntity.badRequest().body("Validation errors: " + errors);
         }
 
-        Departement existing = departementService.extractDepartement(nouveauDepartement.getNom());
-        if (existing != null) {
+        boolean exists = departementService.extractDepartement(nouveauDepartement.getNom()).isPresent();
+        if (exists) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("Le département existe déjà");
         }
@@ -87,7 +89,6 @@ public class DepartementController {
         departementService.insertDepartement(nouveauDepartement);
         return ResponseEntity.ok("Département inséré avec succès");
     }
-
     /**
      * Modifie un département existant par son ID.
      * @param id l'ID du département à modifier.
@@ -96,7 +97,9 @@ public class DepartementController {
      * @return une réponse indiquant le succès ou l'échec de l'opération.
      */
     @PutMapping("/{id}")
-    public ResponseEntity<String> modifierDepartement(@PathVariable int id, @Valid @RequestBody DepartementDto departementModifie, BindingResult result) {
+    public ResponseEntity<String> modifierDepartement(@PathVariable int id,
+                                                      @Valid @RequestBody DepartementDto departementModifie,
+                                                      BindingResult result) {
         if (result.hasErrors()) {
             String errors = result.getAllErrors()
                     .stream()
@@ -105,17 +108,19 @@ public class DepartementController {
             return ResponseEntity.badRequest().body("Validation errors: " + errors);
         }
 
-        Departement existing = departementService.extractDepartement(id);
-        if (existing == null) {
+        Optional<Departement> existingOpt = departementService.extractDepartement(id);
+        if (existingOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Département id non trouvée");
         }
 
+        Departement existing = existingOpt.get();
         // Mettre à jour seulement les champs nécessaires (ici, le nom)
         existing.setNom(departementModifie.getNom());
         departementService.modifierDepartement(id, existing);
 
         return ResponseEntity.ok("Département modifié avec succès");
     }
+
 
 
     /**
@@ -125,12 +130,13 @@ public class DepartementController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<String> supprimerDepartement(@PathVariable int id) {
-        Departement existing = departementService.extractDepartement(id);
-        if (existing == null) {
+        Optional<Departement> existingOpt = departementService.extractDepartement(id);
+        if (existingOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Département id non trouvée");
         }
 
         departementService.supprimerDepartement(id);
         return ResponseEntity.ok("Département supprimé");
     }
+
 }

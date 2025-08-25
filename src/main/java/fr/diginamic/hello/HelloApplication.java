@@ -17,13 +17,16 @@ public class HelloApplication {
     @Bean
     public CommandLineRunner run(VilleService villeService, DepartementService departementService) {
         return args -> {
-            Departement herault = departementService.extractDepartement("Hérault");
-            if (herault == null) {
-                herault = new Departement();
-                herault.setId(34); // <-- Add this line to set the ID
-                herault.setNom("Hérault");
-                departementService.insertDepartement(herault);
-            }
+            Departement herault = departementService
+                    .extractDepartement("Hérault")
+                    .orElseGet(() -> {
+                        Departement d = new Departement();
+                        d.setId(34);
+                        d.setNom("Hérault");
+                        departementService.insertDepartement(d);
+                        return d;
+                    });
+
 
             Ville montpellier = villeService.extractVille("Montpellier");
             if (montpellier == null) {

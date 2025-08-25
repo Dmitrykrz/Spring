@@ -1,4 +1,4 @@
-package fr.diginamic.hello.dao;
+package fr.diginamic.hello.Repositories;
 
 import fr.diginamic.hello.Departement;
 import fr.diginamic.hello.Ville;
@@ -9,12 +9,9 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Interface DAO pour l'entité Ville.
- * Utilise Spring Data JPA pour les opérations de base sur la base de données.
- */
+
 @Repository
-public interface VilleDao extends JpaRepository<Ville, Integer> {
+public interface VilleRepository extends JpaRepository<Ville, Integer> {
 
     /**
      * Recherche une ville par son nom.
@@ -40,4 +37,5 @@ public interface VilleDao extends JpaRepository<Ville, Integer> {
      * @return une liste des villes trouvées.
      */
     List<Ville> findByDepartementAndNbHabitantsBetween(Departement departement, int min, int max);
+
 }

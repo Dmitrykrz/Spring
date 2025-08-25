@@ -1,82 +1,54 @@
 package fr.diginamic.hello.services;
 
 import fr.diginamic.hello.Departement;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.Transactional;
+import fr.diginamic.hello.Repositories.DepartementRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-
+import java.util.Optional;
 
 @Service
 @Transactional
 public class DepartementService {
 
-    @PersistenceContext
-    private EntityManager entityManager;
+    private final DepartementRepository departementRepository;
 
-    /**
-     * Extrait tous les départements.
-     * @return la liste de tous les départements.
-     */
+    public DepartementService(DepartementRepository departementRepository) {
+        this.departementRepository = departementRepository;
+    }
+
+    /** Extrait tous les départements */
     public List<Departement> extractDepartements() {
-        return entityManager.createQuery("SELECT d FROM Departement d", Departement.class)
-                .getResultList();
+        return departementRepository.findAll();
     }
 
-    /**
-     * Extrait un département par son ID.
-     * @param id ID du département.
-     * @return le département ou null si non trouvé.
-     */
-    public Departement extractDepartement(int id) {
-        return entityManager.find(Departement.class, id);
+    /** Extrait un département par son ID */
+    public Optional<Departement> extractDepartement(int id) {
+        return departementRepository.findById(id);
     }
 
-    /**
-     * Extrait un département par son nom.
-     * @param nom nom du département.
-     * @return le département ou null si non trouvé.
-     */
-    public Departement extractDepartement(String nom) {
-        List<Departement> results = entityManager
-                .createQuery("SELECT d FROM Departement d WHERE d.nom = :nom", Departement.class)
-                .setParameter("nom", nom)
-                .getResultList();
-        return results.isEmpty() ? null : results.get(0);
+    /** Extrait un département par son nom */
+    public Optional<Departement> extractDepartement(String nom) {
+        return departementRepository.findByNomIgnoreCase(nom);
     }
 
-    /**
-     * Insère un département.
-     * @param d le département à insérer.
-     */
+    /** Insère un département */
     public void insertDepartement(Departement d) {
-        entityManager.persist(d);
+        departementRepository.save(d);
     }
 
-    /**
-     * Modifie un département existant.
-     * @param id ID du département à modifier.
-     * @param departementModifie le département avec les données mises à jour.
-     */
+    /** Modifie un département existant */
     public void modifierDepartement(int id, Departement departementModifie) {
-        Departement existing = entityManager.find(Departement.class, id);
-        if (existing != null) {
+        departementRepository.findById(id).ifPresent(existing -> {
             existing.setNom(departementModifie.getNom());
             existing.setVilles(departementModifie.getVilles());
-            entityManager.merge(existing);
-        }
+            departementRepository.save(existing);
+        });
     }
 
-    /**
-     * Supprime un département par son ID.
-     * @param id ID du département à supprimer.
-     */
+    /** Supprime un département par son ID */
     public void supprimerDepartement(int id) {
-        Departement existing = entityManager.find(Departement.class, id);
-        if (existing != null) {
-            entityManager.remove(existing);
-        }
+        departementRepository.deleteById(id);
     }
 }
